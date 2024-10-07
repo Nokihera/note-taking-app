@@ -3,14 +3,32 @@ import React, { useEffect, useState } from "react";
 import { app, db } from "../api/firebase";
 import { useNavigate } from "react-router-dom";
 import { FaPlus } from "react-icons/fa";
-import { Timestamp, doc, setDoc } from "firebase/firestore";
+import { Timestamp, doc, getDoc, setDoc } from "firebase/firestore";
+import NoteSection from "../components/NoteSection";
 
 const Dashboard = () => {
   const auth = getAuth(app);
   const [loading, setLoading] = useState(true);
   const [newNote, setNewNote] = useState(false);
   const [noteContent, setNoteContent] = useState("");
+  const [data, setData] = useState([]); // Initialize as an array
+  const [errorMessage, setErrorMessage] = useState(""); // To display error messages
   const navigate = useNavigate();
+
+  useEffect(() => {
+    const fetchData = async () => {
+      try {
+        const docRef = doc(db, "notes", auth.currentUser?.uid);
+        const snapshotDoc = await getDoc(docRef);
+        if (snapshotDoc.exists()) {
+          setData(snapshotDoc.data().note || []); // Initialize with an empty array if no notes
+        }
+      } catch (err) {
+        console.log(err.message);
+      }
+    };
+    fetchData();
+  }, [auth.currentUser?.uid]);
 
   useEffect(() => {
     const unsubscribe = onAuthStateChanged(auth, (user) => {
@@ -31,12 +49,13 @@ const Dashboard = () => {
   const handleCloseModal = () => {
     setNewNote(false);
     setNoteContent("");
+    setErrorMessage(""); // Clear error message on close
   };
 
   const handleSaveNote = async () => {
     const noteId = Date.now();
     try {
-      const action = await setDoc(
+      await setDoc(
         doc(db, "notes", auth.currentUser.uid, "note", noteId.toString()),
         {
           content: noteContent,
@@ -44,9 +63,11 @@ const Dashboard = () => {
         }
       );
       console.log("Note saved:", noteContent);
+      setData((prevData) => [...prevData, { content: noteContent, timestamp: Timestamp.now() }]); // Update local state
       handleCloseModal(); // Close the modal after saving
     } catch (err) {
-      alert(err.message);
+      setErrorMessage(err.message); // Set error message for display
+      console.log(err.message);
     }
   };
 
@@ -82,6 +103,7 @@ const Dashboard = () => {
               className="w-full border rounded-md p-2 outline-none resize-none"
               placeholder="Write your note here..."
             ></textarea>
+            {errorMessage && <p className="text-red-500">{errorMessage}</p>} {/* Display error message */}
             <div className="flex justify-end mt-4">
               <button
                 onClick={handleCloseModal}
@@ -99,6 +121,7 @@ const Dashboard = () => {
           </div>
         </div>
       )}
+      <NoteSection data={data} />
     </div>
   );
 };
