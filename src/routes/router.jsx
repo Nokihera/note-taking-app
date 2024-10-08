@@ -4,6 +4,7 @@ import Dashboard from "../pages/Dashboard";
 import SignIn from "../pages/SignIn";
 import SignUp from "../pages/SignUp";
 import NotFound from "../pages/NotFound";
+import NoteDetailPage from "../pages/NoteDetailPage";
 
 const router = createBrowserRouter([
     {
@@ -13,7 +14,11 @@ const router = createBrowserRouter([
             {
                 path: "/",
                 element: <Dashboard/>
-            }
+            },
+            {
+                path: "/note/:id",
+                element: <NoteDetailPage/>
+            },
         ]
     },
     {

@@ -3,7 +3,7 @@ import React, { useEffect, useState } from "react";
 import { app, db } from "../api/firebase";
 import { useNavigate } from "react-router-dom";
 import { FaPlus } from "react-icons/fa";
-import { Timestamp, doc, getDoc, setDoc } from "firebase/firestore";
+import { Timestamp, doc, getDoc, setDoc, collection, getDocs } from "firebase/firestore";
 import NoteSection from "../components/NoteSection";
 
 const Dashboard = () => {
@@ -18,17 +18,20 @@ const Dashboard = () => {
   useEffect(() => {
     const fetchData = async () => {
       try {
-        const docRef = doc(db, "notes", auth.currentUser?.uid);
-        const snapshotDoc = await getDoc(docRef);
-        if (snapshotDoc.exists()) {
-          setData(snapshotDoc.data().note || []); // Initialize with an empty array if no notes
-        }
+        const notesRef = collection(db, "notes", auth.currentUser?.uid, "note"); // Access the 'note' sub-collection
+        const snapshot = await getDocs(notesRef);
+        const notes = snapshot.docs.map(doc => doc.data()); // Map each document's data
+        setData(notes);
+        console.log("Notes fetched:", notes);
       } catch (err) {
         console.log(err.message);
       }
     };
-    fetchData();
+    if (auth.currentUser?.uid) {
+      fetchData();
+    }
   }, [auth.currentUser?.uid]);
+  
 
   useEffect(() => {
     const unsubscribe = onAuthStateChanged(auth, (user) => {
@@ -58,6 +61,7 @@ const Dashboard = () => {
       await setDoc(
         doc(db, "notes", auth.currentUser.uid, "note", noteId.toString()),
         {
+          id: noteId,
           content: noteContent,
           timestamp: Timestamp.now(),
         }
