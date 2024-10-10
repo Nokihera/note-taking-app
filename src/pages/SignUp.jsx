@@ -8,10 +8,12 @@ const SignUp = () => {
   const [name, setName] = useState("");
   const [email, setEmail] = useState("");
   const [password, setPassword] = useState("");
+  const [loading, setLoading] = useState(false);
   const [confirmPassword, setConfirmPassword] = useState("");
   const auth = getAuth(app);
   const navigate = useNavigate();
   const handleSignUp = async (e) => {
+    setLoading(true);
     e.preventDefault();
     try {
       if (password !== confirmPassword) {
@@ -33,6 +35,7 @@ const SignUp = () => {
     } catch (err) {
       alert(err.message);
     }finally{
+      setLoading(false);
       setName('');
       setPassword('');
       setEmail('');
@@ -116,9 +119,11 @@ const SignUp = () => {
           </div>
 
           <button
+            disabled={loading}
             onClick={handleSignUp}
             type="submit"
-            className="w-full bg-indigo-600 text-white py-2 px-4 rounded-md shadow hover:bg-indigo-700 focus:outline-none focus:ring-2 focus:ring-indigo-500"
+            className={`w-full bg-indigo-600 text-white py-2 px-4 rounded-md shadow hover:bg-indigo-700 focus:outline-none focus:ring-2 focus:ring-indigo-500 ${
+              loading ? "opacity-50 cursor-not-allowed" : ""}`}
           >
             Sign Up
           </button>

@@ -8,6 +8,7 @@ import NoteSection from "../components/NoteSection";
 
 const Dashboard = () => {
   const auth = getAuth(app);
+  const [saveLoading, setSaveLoading] = useState(false);
   const [loading, setLoading] = useState(true);
   const [newNote, setNewNote] = useState(false);
   const [noteContent, setNoteContent] = useState("");
@@ -62,6 +63,7 @@ const Dashboard = () => {
   };
 
   const handleSaveNote = async () => {
+    setSaveLoading(true);
     const noteId = Date.now();
     try {
       await setDoc(
@@ -78,6 +80,8 @@ const Dashboard = () => {
     } catch (err) {
       setErrorMessage(err.message); // Set error message for display
       console.log(err.message);
+    }finally{
+      setSaveLoading(false);
     }
   };
 
@@ -122,8 +126,9 @@ const Dashboard = () => {
                 Cancel
               </button>
               <button
+                disabled={saveLoading}
                 onClick={handleSaveNote}
-                className="bg-indigo-600 text-white py-2 px-4 rounded-md hover:bg-indigo-700 transition duration-200"
+                className={`bg-indigo-600 text-white py-2 px-4 rounded-md hover:bg-indigo-700 transition duration-200 ${saveLoading ? "opacity-50 cursor-not-allowed" : ""}`}
               >
                 Save
               </button>
