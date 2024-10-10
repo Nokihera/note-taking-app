@@ -78,7 +78,7 @@ const NoteDetailPage = () => {
           onClick={handleOnClickDelete}
           className={`bg-red-600 text-white py-2 px-4 rounded-lg shadow-md hover:bg-red-700 focus:outline-none focus:ring-2 focus:ring-red-500 transition duration-200 ${deleteLoading ? "opacity-50 cursor-not-allowed" : ""}`}
         >
-          Delete
+          {deleteLoading? "Deleting...": "Delete"}
         </button>
       </div>
       <div className="mb-6">
@@ -98,7 +98,7 @@ const NoteDetailPage = () => {
           onClick={handleSaveNote}
           className={`bg-indigo-600 text-white py-2 px-6 rounded-lg shadow-md hover:bg-indigo-700 focus:outline-none focus:ring-2 focus:ring-indigo-500 transition duration-200 ${saveLoading ? "opacity-50 cursor-not-allowed" : ""}`}
         >
-          Save
+          {saveLoading? "Saving...": "Save"}
         </button>
       </div>
     </div>

@@ -10,6 +10,7 @@ const SignIn = () => {
   const auth = getAuth(app);
   const navigate = useNavigate();
   const provider = new GoogleAuthProvider();
+  const [googleLoading, setGoogleLoading] = useState(false);
   const handleSignIn = async(e) => {
     e.preventDefault();
     try{
@@ -23,6 +24,7 @@ const SignIn = () => {
   };
 
   const handleGoogleSignIn = async() => {
+    setGoogleLoading(true);
     try{
       const userCredential = await signInWithPopup(auth, provider);
       const user = userCredential.user;
@@ -30,6 +32,8 @@ const SignIn = () => {
       navigate('/');
     }catch(err){
       alert(err.message);
+    }finally{
+      setGoogleLoading(false);
     }
   };
 
@@ -70,16 +74,17 @@ const SignIn = () => {
             type="submit"
             className={`w-full bg-indigo-600 text-white py-2 px-4 rounded-md shadow hover:bg-indigo-700 focus:outline-none focus:ring-2 focus:ring-indigo-500 ${loading ? 'opacity-50 cursor-not-allowed' : ''}`}
           >
-            Sign In
+            {loading ? 'Signing in...' : 'Sign In'}
           </button>
         </form>
 
         <div className="mt-6">
           <button
+            disabled={googleLoading}
             onClick={handleGoogleSignIn}
             className="w-full bg-red-500 text-white py-2 px-4 rounded-md shadow hover:bg-red-600 focus:outline-none focus:ring-2 focus:ring-red-400"
           >
-            Sign in with Google
+            {googleLoading ? 'Signing in...' : 'Sign In with Google'}
           </button>
         </div>
 

@@ -130,7 +130,7 @@ const Dashboard = () => {
                 onClick={handleSaveNote}
                 className={`bg-indigo-600 text-white py-2 px-4 rounded-md hover:bg-indigo-700 transition duration-200 ${saveLoading ? "opacity-50 cursor-not-allowed" : ""}`}
               >
-                Save
+                {saveLoading ? "Saving..." : "Save"}
               </button>
             </div>
           </div>
