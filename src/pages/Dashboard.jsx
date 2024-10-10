@@ -20,17 +20,23 @@ const Dashboard = () => {
       try {
         const notesRef = collection(db, "notes", auth.currentUser?.uid, "note"); // Access the 'note' sub-collection
         const snapshot = await getDocs(notesRef);
-        const notes = snapshot.docs.map(doc => doc.data()); // Map each document's data
-        setData(notes);
-        console.log("Notes fetched:", notes);
+        let notes = snapshot.docs.map(doc => doc.data()); // Map each document's data
+        
+        // Sort notes by timestamp in descending order (newest first)
+        notes = notes.sort((a, b) => b.timestamp.toMillis() - a.timestamp.toMillis());
+  
+        setData(notes); // Set the sorted notes
+        console.log("Notes fetched and sorted:", notes);
       } catch (err) {
         console.log(err.message);
       }
     };
+    
     if (auth.currentUser?.uid) {
       fetchData();
     }
   }, [auth.currentUser?.uid]);
+  
   
 
   useEffect(() => {
